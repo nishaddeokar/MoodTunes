@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # MoodTunes 
 
 ## Overview
