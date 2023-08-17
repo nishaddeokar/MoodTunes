@@ -5,8 +5,9 @@ from app.forms import LoginForm, RegistrationForm, AuthForm, GenreForm
 import sqlite3
 import terraAuth
 import api
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -21,6 +22,7 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -43,6 +45,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/auth', methods=['GET', 'POST'])
+@login_required
 def auth():
     form = AuthForm()
     if form.validate_on_submit():
@@ -51,6 +54,7 @@ def auth():
     return render_template('auth.html',  title='Connect', form=form)
 
 @app.route('/gen', methods=['GET', 'POST'])
+@login_required
 def gen():
     form = GenreForm()
     if form.validate_on_submit():
@@ -59,6 +63,7 @@ def gen():
     return render_template('gen.html', title='Create', username="Nishad", form=form)
 
 @app.route('/display')
+@login_required
 def display():
     user = {'username': 'Nishad', 'graph': 'foo.png'}
     return render_template('display.html', title='Display', user=user)

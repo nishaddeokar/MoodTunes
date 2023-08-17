@@ -2,13 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-    <style>
-        body {
-            font-family: 'Roboto';
-        }
-    </style>
     <meta charset="UTF-8">
     {% if title %}
     <title>{{ title }} - Mood Tunes</title>
@@ -17,31 +10,29 @@
     {% endif %}
 </head>
 
-<center>
-
-    <body>
-        <div>
-            Mood Tunes:
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
-            <a href="{{ url_for('auth') }}">Connect</a>
-            <a href="{{ url_for('gen') }}">Create</a>
-            <a href="{{ url_for('display') }}">Display</a>
-        </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+<body>
+    <div>
+        Mood Tunes:
+        <a href="{{ url_for('auth') }}">Connect</a>
+        <a href="{{ url_for('gen') }}">Create</a>
+        <a href="{{ url_for('display') }}">Display</a>
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('login') }}">Login</a>
+        {% else %}
+        <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </body </center>
+    </div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</body
 
 </html>
