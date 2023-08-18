@@ -1,9 +1,10 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, session
 from app import app
 from app.forms import LoginForm, RegistrationForm, AuthForm, GenreForm
 import sqlite3
 import terraAuth
+import spotifyAuth
 import api
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
@@ -36,7 +37,10 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('auth'))
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('auth')
+        return redirect(url_for(next_page))
     return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
@@ -45,12 +49,15 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/auth', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def auth():
     form = AuthForm()
     if form.validate_on_submit():
-        terraAuth.get()
-        return redirect(url_for('gen'))
+        if form.submit.data:
+            terraAuth.set("queue")
+        if form.submit2.data:
+            session['spotifyToken'] = spotifyAuth.get("nishaddeokar")
+        return redirect(url_for('auth'))
     return render_template('auth.html',  title='Connect', form=form)
 
 @app.route('/gen', methods=['GET', 'POST'])

@@ -9,14 +9,17 @@ def get_json():
 
     terra = Terra(API_KEY, DEV_ID, SECRET)
 
-    # parsed_api_response = terra.list_users().get_parsed_response().users[0].user_id
+    # terra.deauthenticate_user(terra.list_users().get_parsed_response().users[0])
+    # parsed_api_response = terra.list_users().get_parsed_response().users
     # print(parsed_api_response)
 
     # Create a user object
-    USER_ID = "f043f511-e9bb-432c-b222-3214f5bfcebb"
-    terra_user = terra.from_user_id(USER_ID)
+    # USER_ID = "9b0c57f7-8549-461e-b003-d58a7c573ee2"
+    # terra_user = terra.from_user_id(USER_ID)
 
-    # Get the nutrition data from start date to current time
-    sleep_resp = terra_user.get_sleep(start_date=datetime.strptime('2023-07-29','%Y-%m-%d'), end_date=datetime.now(), to_webhook = False )
-    sleep_resp_json = sleep_resp.get_json()
-    return sleep_resp_json
+    # # Get the nutrition data from start date to current time
+    # sleep_resp = terra_user.get_activity(start_date=datetime.strptime('2023-08-09','%Y-%m-%d'), end_date=datetime.now(), to_webhook = False )
+    # sleep_resp_json = sleep_resp.get_json()
+    # return sleep_resp_json
+
+get_json()

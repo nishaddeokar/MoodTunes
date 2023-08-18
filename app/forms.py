@@ -24,7 +24,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different username.')
 
 class AuthForm(FlaskForm):
-    submit = SubmitField('Submit')
+    submit = SubmitField('Terra')
+    submit2 = SubmitField('Spotify')
 
 class GenreForm(FlaskForm):
     genres = ["pop", "rap", "rock", "urbano latino", "hip hop", "trap latino", "dance pop", "reggaeton", "pop rap", "modern rock", "trap", "latin pop", "classic rock"]

@@ -22,7 +22,3 @@ Optionally health data may be retrieved reguarly e.g. hourly
 ## Technical requirements
 Each database should have a composite primary key of user_id + datetime 
 Input should be validated 
-
-=======
-# moodtunes
->>>>>>> 7330eef5fc330d972cfaeadf8009e6598a22007f

@@ -1,17 +1,22 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope = "user-top-read playlist-modify-public"))
 
-test = sp.recommendations(seed_genres=['pop'], limit = 10,target_tempo=120)
-#print(test)
 top = sp.current_user_top_tracks()
-print(top)
+track_uris = []
+for item in top['items']:
+    if 'track' in item:
+        track_uris.append(item['track']['uri'])
+
+test = sp.recommendations(seed_tracks=track_uris,seed_genres=['rock'], limit = 10,target_tempo=120)
+
+for item in test['tracks']:
+    print(item['name'])
+
+
+# print(top)
 # results = sp.current_user_saved_tracks()
-# for idx, item in enumerate(test['tracks']):
-#     print(idx, item['artists'][0]['name'], " – ", item['name'])
-
-
+# print(idx, item['artists'][0]['name'], " – ", item['name'])
 #     {'tracks': [{'album': {'album_type': 'ALBUM', 'artists': [{'external_urls': {'spotify': 'https://open.spotify.com/artist/6gZq1Q6bdOxsUPUG1TaFbF'}, 'href': 'https://api.spotify.com/v1/artists/6gZq1Q6bdOxsUPUG1TaFbF', 'id': '6gZq1Q6bdOxsUPUG1TaFbF', 'name': 'Godsmack', 'type': 'artist', 'uri': 'spotify:artist:6gZq1Q6bdOxsUPUG1TaFbF'}], 'available_markets': ['AD', 'AE', 'AG', 'AL', 'AM', 'AO', 'AR', 'AT', 'AU', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ',
 # 'BN', 'BO', 'BR', 'BS', 'BT', 'BW', 'BZ', 'CA', 'CD', 'CG', 'CH', 'CI', 'CL', 'CM', 'CO', 'CR', 'CV', 'CW', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'ES', 'ET', 'FI', 'FJ', 'FM', 'FR', 'GA', 'GB', 'GD', 'GE', 'GH', 'GM', 'GN', 'GQ', 'GR', 'GT', 'GW', 'GY', 'HK', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IN', 'IQ', 'IS', 'IT',
 # 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KR', 'KW', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MG', 'MH', 'MK', 'ML', 'MN', 'MO', 'MR', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NE', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NZ', 'OM', 'PA', 'PE', 'PG', 'PH', 'PK', 'PL', 'PS', 'PT',

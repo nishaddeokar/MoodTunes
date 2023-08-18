@@ -7,10 +7,19 @@
         {
             "name": "Python: Current File",
             "type": "python",
-            "request": "launch",
+            "request": "test",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true,
+            "purpose": [
+                "debug-in-terminal"
+            ]
+        },
+        {
+            "name": "Debug Unit Test",
+            "type": "python",
+            "request": "test",
+            "justMyCode": false,
         }
     ]
 }
