@@ -1,22 +1,23 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, session
-from app import app
+from flask import render_template, flash, redirect, url_for, request, session
+from app import app, db
 from app.forms import LoginForm, RegistrationForm, AuthForm, GenreForm
-import sqlite3
 import terraAuth
 import spotifyAuth
-import api
 from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
 from app.models import User
+from load import save_activity_data, save_body_data, save_sleep_data, load_health_data
+from generatePlaylist import generate_playlist
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('auth'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -40,7 +41,7 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('auth')
-        return redirect(url_for(next_page))
+        return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
@@ -49,14 +50,14 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/auth', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def auth():
     form = AuthForm()
     if form.validate_on_submit():
         if form.submit.data:
-            terraAuth.set("queue")
+            terraAuth.set(current_user.username)
         if form.submit2.data:
-            session['spotifyToken'] = spotifyAuth.get("nishaddeokar")
+            session['spotifyToken'] = spotifyAuth.get(current_user.username)
         return redirect(url_for('auth'))
     return render_template('auth.html',  title='Connect', form=form)
 
@@ -65,12 +66,13 @@ def auth():
 def gen():
     form = GenreForm()
     if form.validate_on_submit():
-        print(api.get_json())
+        load_health_data(current_user.username)
+        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken', None), str(form.myField), 76)
         return redirect(url_for('display'))
     return render_template('gen.html', title='Create', username="Nishad", form=form)
 
 @app.route('/display')
 @login_required
 def display():
-    user = {'username': 'Nishad', 'graph': 'foo.png'}
-    return render_template('display.html', title='Display', user=user)
+    print(session.get('playlistID', None))
+    return render_template('display.html', title='Display', playlistID=session.get('playlistID'))

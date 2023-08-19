@@ -1,14 +1,17 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="bc9d7e2bdf84441fb295477c2fe03c33",
+                                               client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
+                                               redirect_uri="https://open.spotify.com/", 
+                                               scope = "user-top-read playlist-modify-public"))
 
 top = sp.current_user_top_tracks()
 track_uris = []
 for item in top['items']:
     if 'track' in item:
         track_uris.append(item['track']['uri'])
-
-test = sp.recommendations(seed_tracks=track_uris,seed_genres=['rock'], limit = 10,target_tempo=120)
+test = sp.recommendations(seed_tracks=track_uris,seed_genres=[genre], limit=10,target_tempo=120)
 
 for item in test['tracks']:
     print(item['name'])
