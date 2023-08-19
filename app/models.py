@@ -3,10 +3,25 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
+from sqlalchemy import desc
 
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+def get_latest_bpm_for_user(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return None
+    latest_health_entry = Health.query.join(Activity, Health.activity_id == Activity.id)\
+        .filter(Health.user_id == user.id)\
+        .order_by(desc(Activity.timestamp))\
+        .first()
+    if latest_health_entry and latest_health_entry.activity:
+        return int(latest_health_entry.activity.bpm)
+    else:
+        return None
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -6,7 +6,7 @@ import terraAuth
 import spotifyAuth
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from app.models import User
+from app.models import User, get_latest_bpm_for_user
 from load import save_activity_data, save_body_data, save_sleep_data, load_health_data
 from generatePlaylist import generate_playlist
 
@@ -67,7 +67,8 @@ def gen():
     form = GenreForm()
     if form.validate_on_submit():
         load_health_data(current_user.username)
-        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken', None), str(form.myField), 76)
+        latest_health = get_latest_bpm_for_user(current_user.username) or 120
+        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken', None), str(form.myField), latest_health)
         return redirect(url_for('display'))
     return render_template('gen.html', title='Create', username="Nishad", form=form)
 

@@ -7,13 +7,13 @@ def generate_playlist(username, token, genre, bpm):
     try:
         token = util.prompt_for_user_token(username, client_id="bc9d7e2bdf84441fb295477c2fe03c33",
                                                      client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
-                                                     redirect_uri="http://127.0.0.1:5000/", 
+                                                     redirect_uri="http://nishaddeokar.pythonanywhere.com/", 
                                                      scope = "user-top-read playlist-modify-public")
     except:
         os.remove(f".cache-{username}")
         token = util.prompt_for_user_token(username, client_id="bc9d7e2bdf84441fb295477c2fe03c33",
                                                      client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
-                                                     redirect_uri="http://127.0.0.1:5000/", 
+                                                     redirect_uri="http://nishaddeokar.pythonanywhere.com/", 
                                                      scope = "user-top-read playlist-modify-public")
     sp = spotipy.Spotify(auth=token)
     top = sp.current_user_top_tracks(limit=4, time_range="short_term")
@@ -28,8 +28,3 @@ def generate_playlist(username, token, genre, bpm):
     new_playlist = sp.user_playlist_create(user=sp.current_user()['id'], name="BPM " + str(bpm), description=datetime.today().strftime('%Y-%m-%d %H:%M:%S'))
     sp.user_playlist_add_tracks(user=sp.current_user()['id'], playlist_id=new_playlist['id'], tracks=rec_track_ids)
     return new_playlist['id']
-
-# auth_manager=SpotifyOAuth(client_id="bc9d7e2bdf84441fb295477c2fe03c33",
-#                                                 client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
-#                                                 redirect_uri="http://127.0.0.1:5000/", 
-#                                                 scope = "user-top-read playlist-modify-public")
