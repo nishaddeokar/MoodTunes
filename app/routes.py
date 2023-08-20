@@ -9,6 +9,7 @@ from werkzeug.urls import url_parse
 from app.models import User, get_latest_bpm_for_user
 from load import save_activity_data, save_body_data, save_sleep_data, load_health_data
 from generatePlaylist import generate_playlist
+import spotipy
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -53,13 +54,46 @@ def logout():
 @login_required
 def auth():
     form = AuthForm()
+    cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
+    auth_manager = spotipy.oauth2.SpotifyOAuth(
+        client_id="bc9d7e2bdf84441fb295477c2fe03c33",
+        client_secret="779e3b9132bb4c50ba58bec0e87f3f05",
+        redirect_uri="http://moodtunes.pythonanywhere.com/callback",
+        scope='user-top-read playlist-modify-public',
+        cache_handler=cache_handler,
+        show_dialog=True
+    )
+
     if form.validate_on_submit():
         if form.submit.data:
             terraAuth.set(current_user.username)
         if form.submit2.data:
-            session['spotifyToken'] = spotifyAuth.get(current_user.username)
-        return redirect(url_for('auth'))
-    return render_template('auth.html',  title='Connect', form=form)
+            if not auth_manager.validate_token(cache_handler.get_cached_token()):
+                auth_url = auth_manager.get_authorize_url()
+                return redirect(auth_url)
+        return redirect(url_for('gen'))
+
+    return render_template('auth.html', title='Connect', form=form)
+
+@app.route('/callback')
+@login_required
+def spotify_callback():
+    cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
+    auth_manager = spotipy.oauth2.SpotifyOAuth(
+        client_id="bc9d7e2bdf84441fb295477c2fe03c33",
+        client_secret="779e3b9132bb4c50ba58bec0e87f3f05",
+        redirect_uri="http://moodtunes.pythonanywhere.com/callback",
+        scope='user-top-read playlist-modify-public',
+        cache_handler=cache_handler,
+        show_dialog=True
+    )
+    
+    if request.args.get("code"):
+        auth_manager.get_access_token(request.args.get("code"))
+        session["spotifyToken"] = cache_handler.get_cached_token()['access_token']
+        return redirect(url_for('gen'))
+        
+    return redirect(url_for('auth'))
 
 @app.route('/gen', methods=['GET', 'POST'])
 @login_required
@@ -68,12 +102,12 @@ def gen():
     if form.validate_on_submit():
         load_health_data(current_user.username)
         latest_health = get_latest_bpm_for_user(current_user.username) or 120
-        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken', None), str(form.myField), latest_health)
+        print("WE HERE:" + session.get('spotifyToken'))
+        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken'), str(form.myField), latest_health)
         return redirect(url_for('display'))
     return render_template('gen.html', title='Create', username="Nishad", form=form)
 
 @app.route('/display')
 @login_required
 def display():
-    print(session.get('playlistID', None))
     return render_template('display.html', title='Display', playlistID=session.get('playlistID'))

@@ -12,7 +12,7 @@ def set(ref_id):
     widget_response = terra.generate_widget_session(
         reference_id=ref_id,
         providers=["GOOGLE"],
-        auth_success_redirect_url="http://nishaddeokar.pythonanywhere.com/auth",
+        auth_success_redirect_url="http://127.0.0.1:3000/auth",
         auth_failure_redirect_url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         language="en").get_parsed_response()
 

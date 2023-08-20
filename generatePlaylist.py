@@ -4,23 +4,11 @@ import spotipy.util as util
 from datetime import datetime
 
 def generate_playlist(username, token, genre, bpm):
-    try:
-        token = util.prompt_for_user_token(username, client_id="bc9d7e2bdf84441fb295477c2fe03c33",
-                                                     client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
-                                                     redirect_uri="http://nishaddeokar.pythonanywhere.com/", 
-                                                     scope = "user-top-read playlist-modify-public")
-    except:
-        os.remove(f".cache-{username}")
-        token = util.prompt_for_user_token(username, client_id="bc9d7e2bdf84441fb295477c2fe03c33",
-                                                     client_secret="779e3b9132bb4c50ba58bec0e87f3f05", 
-                                                     redirect_uri="http://nishaddeokar.pythonanywhere.com/", 
-                                                     scope = "user-top-read playlist-modify-public")
     sp = spotipy.Spotify(auth=token)
     top = sp.current_user_top_tracks(limit=4, time_range="short_term")
     top_track_ids = []
     for item in top['items']:
         top_track_ids.append(item['id'])
-        print(item['name'])
     r = sp.recommendations(seed_tracks=top_track_ids, seed_genres=[genre], limit=10, target_tempo=bpm)
     rec_track_ids = []
     for item in r['tracks']:
