@@ -3,11 +3,10 @@ from flask import render_template, flash, redirect, url_for, request, session
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, AuthForm, GenreForm
 import terraAuth
-import spotifyAuth
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-from app.models import User, get_latest_bpm_for_user
-from load import save_activity_data, save_body_data, save_sleep_data, load_health_data
+from app.models import User, get_latest_bpm_for_user, set_genre
+from load import load_health_data
 from generatePlaylist import generate_playlist
 import spotipy
 
@@ -56,9 +55,6 @@ def auth():
     form = AuthForm()
     cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
     auth_manager = spotipy.oauth2.SpotifyOAuth(
-        client_id="bc9d7e2bdf84441fb295477c2fe03c33",
-        client_secret="779e3b9132bb4c50ba58bec0e87f3f05",
-        redirect_uri="http://moodtunes.pythonanywhere.com/callback",
         scope='user-top-read playlist-modify-public',
         cache_handler=cache_handler,
         show_dialog=True
@@ -80,9 +76,6 @@ def auth():
 def spotify_callback():
     cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
     auth_manager = spotipy.oauth2.SpotifyOAuth(
-        client_id="bc9d7e2bdf84441fb295477c2fe03c33",
-        client_secret="779e3b9132bb4c50ba58bec0e87f3f05",
-        redirect_uri="http://moodtunes.pythonanywhere.com/callback",
         scope='user-top-read playlist-modify-public',
         cache_handler=cache_handler,
         show_dialog=True
@@ -101,9 +94,9 @@ def gen():
     form = GenreForm()
     if form.validate_on_submit():
         load_health_data(current_user.username)
-        latest_health = get_latest_bpm_for_user(current_user.username) or 120
-        print("WE HERE:" + session.get('spotifyToken'))
-        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken'), str(form.myField), latest_health)
+        set_genre(current_user.username, form.myField.data)
+        latest_bpm = get_latest_bpm_for_user(current_user.username) or 120
+        session['playlistID'] = generate_playlist(current_user.username, session.get('spotifyToken'), form.myField.data, latest_bpm)
         return redirect(url_for('display'))
     return render_template('gen.html', title='Create', username="Nishad", form=form)
 

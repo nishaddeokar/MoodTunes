@@ -8,7 +8,7 @@ def save_activity_data():
     with open('app/static/activityData.json', 'r') as f:
         data = json.load(f)
 
-    # Assuming there could be multiple activity data, loop through them
+    # First instance selected
     activity = data['data'][0]
     # 2. Extract the relevant values
     bpm = activity['heart_rate_data']['summary']['avg_hr_bpm']
@@ -25,7 +25,7 @@ def save_body_data():
     with open('app/static/bodyData.json', 'r') as f:
         data = json.load(f)
 
-    # Assuming there could be multiple activity data, loop through them
+    # First instance selected
     body = data['data'][0]
     # 2. Extract the relevant values
     estimated_fitness_age=body['measurements_data']['measurements'][0]['estimated_fitness_age']
@@ -43,7 +43,7 @@ def save_sleep_data():
     with open('app/static/sleepData.json', 'r') as f:
         data = json.load(f)
 
-    # Assuming there could be multiple activity data, loop through them
+    # Select relevant data entries
     sleep_data = data['data'][0]['sleep_durations_data']
     num_REM_events = sleep_data['asleep']['num_REM_events']
     num_wakeup_events = sleep_data['awake']['num_wakeup_events']

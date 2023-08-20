@@ -22,6 +22,13 @@ def get_latest_bpm_for_user(username):
     else:
         return None
 
+def set_genre(username, new_genre):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.genre = new_genre 
+        db.session.commit() 
+    else:
+        return none
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
